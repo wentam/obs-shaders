@@ -66,20 +66,12 @@ float4 mainImage(VertData v_in) : TARGET {
   float4 bg = bg_image.Sample(textureSampler, v_in.uv);
 
   float3 diff = abs(fg.rgb-bg.rgb);
-  float biggestDiff = max(max(diff.r,diff.g), diff.b);
- // return float4(1,1,1,diffAvgHere);
-  //if (biggestDiff < 0.06 && diffAvg < 0.1) return float4(fg.rgb,0);
-  //return fg;
+  float3 diffhue = abs(rgb2hsv(bg.rgb)-rgb2hsv(fg.rgb));
+  float biggestDiff = max(max(max(max(max(diff.r,diff.g), diff.b), diffhue[0]), diffhue[1]), diffhue[2]);
+
   if (blue_pixel_dropping && fg.b > (fg.g+fg.r)+0.2-blue_pixel_dropping_threshold) return float4(0,0,0,0);
 
- // if (blue_pixel_dropping) {
- //   float3 hsv = rgb2hsv(fg.rgb);
- //   if (hsv[0] > 0.56 && hsv[0] < 0.65 && hsv[1] > blue_pixel_dropping_threshold && hsv[2] > blue_pixel_dropping_threshold)
- //     return float4(0,0,0,0);
- // }
-
-
-  if (diffAvgLeft > threshold && diffAvgRight > threshold && diffAvgUp > threshold) {
+  if (diffAvgHere > threshold && diffAvgLeft > threshold && diffAvgRight > threshold && diffAvgUp > threshold) {
     if (mute_blues && fg.b > (fg.g+fg.r)-0.2) {
       fg.b = (fg.g+fg.r)-0.2;
     }
